@@ -30,7 +30,6 @@ public class BlockDebugListener implements Listener {
             p.sendMessage("isLockedUpDownLockedDoor: " + formatBoolean(LocketteProAPI.isUpDownLockedDoor(b)));
             p.sendMessage(" - isOwner/UserSingle: " + formatBoolean(LocketteProAPI.isOwnerUpDownLockedDoor(b, p)) + ChatColor.RESET + "/" + formatBoolean(LocketteProAPI.isOwnerUpDownLockedDoor(b, p)));
             if (LocketteProAPI.isLockSign(b)) {
-                p.sendMessage("isSignExpired: " + formatBoolean(LocketteProAPI.isSignExpired(b)));
                 p.sendMessage(" - created: " + Utils.getCreatedFromLine(((Sign) b.getState()).getLine(0)));
                 p.sendMessage(" - now     : " + (int) (System.currentTimeMillis() / 1000));
             }

@@ -404,17 +404,6 @@ public class LocketteProAPI {
         return false;
     }
 
-    public static boolean isSignExpired(Block block) {
-        if (!isSign(block) || !isLockSign(block)) return false;
-        return isLineExpired(((Sign) block.getState()).getLine(0));
-    }
-
-    public static boolean isLineExpired(String line) {
-        long createdtime = Utils.getCreatedFromLine(line);
-        if (createdtime == -1L) return false; // No expire
-        long currenttime = (int) (System.currentTimeMillis() / 1000);
-        return createdtime + Config.getLockExpireDays() * 86400L < currenttime;
-    }
 
     public static boolean isUpDownLockedDoor(Block block) {
         Block blockup = block.getRelative(BlockFace.UP);
@@ -457,46 +446,6 @@ public class LocketteProAPI {
     public static Block getAttachedBlock(Block sign) { // Requires isSign
         BlockFace facing = getFacing(sign);
         return sign.getRelative(facing.getOppositeFace());
-    }
-
-    public static int getTimerOnSigns(Block block) {
-        for (BlockFace blockface : newsfaces) {
-            Block relative = block.getRelative(blockface);
-            if (isSign(relative)) {
-                Sign sign = (Sign) relative.getState();
-                for (String line : sign.getLines()) {
-                    int linetime = Config.getTimer(line);
-                    if (linetime > 0) return linetime;
-                }
-            }
-        }
-        return 0;
-    }
-
-    public static int getTimerDoor(Block block) {
-        int timersingle = getTimerSingleDoor(block);
-        if (timersingle > 0) return timersingle;
-        for (BlockFace blockface : newsfaces) {
-            Block relative = block.getRelative(blockface);
-            timersingle = getTimerSingleDoor(relative);
-            if (timersingle > 0) return timersingle;
-        }
-        return 0;
-    }
-
-    public static int getTimerSingleDoor(Block block) {
-        Block[] doors = getDoors(block);
-        if (doors == null) return 0;
-        Block relativeup = doors[1].getRelative(BlockFace.UP);
-        int relativeuptimer = getTimerOnSigns(relativeup);
-        if (relativeuptimer > 0) return relativeuptimer;
-        int doors0 = getTimerOnSigns(doors[0]);
-        if (doors0 > 0) return doors0;
-        int doors1 = getTimerOnSigns(doors[1]);
-        if (doors1 > 0) return doors1;
-        Block relativedown = doors[0].getRelative(BlockFace.DOWN);
-        int relativedowntimer = getTimerOnSigns(relativedown);
-        return Math.max(relativedowntimer, 0);
     }
 
     public static Block[] getDoors(Block block) {

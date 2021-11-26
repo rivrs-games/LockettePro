@@ -256,7 +256,6 @@ public class BlockPlayerListener implements Listener {
                             Block doorblock = LocketteProAPI.getBottomDoorBlock(block);
                             org.bukkit.block.data.Openable openablestate = (org.bukkit.block.data.Openable) doorblock.getBlockData();
                             boolean shouldopen = !openablestate.isOpen(); // Move to here
-                            int closetime = LocketteProAPI.getTimerDoor(doorblock);
                             List<Block> doors = new ArrayList<>();
                             doors.add(doorblock);
                             if (doorblock.getType() == Material.IRON_DOOR || doorblock.getType() == Material.IRON_TRAPDOOR) {
@@ -268,17 +267,6 @@ public class BlockPlayerListener implements Listener {
                                     doors.add(relative);
                                     LocketteProAPI.toggleDoor(relative, shouldopen);
                                 }
-                            }
-                            if (closetime > 0) {
-                                for (Block door : doors) {
-                                    if (door.hasMetadata("lockettepro.toggle")) {
-                                        return;
-                                    }
-                                }
-                                for (Block door : doors) {
-                                    door.setMetadata("lockettepro.toggle", new FixedMetadataValue(LockettePro.getPlugin(), true));
-                                }
-                                Bukkit.getScheduler().runTaskLater(LockettePro.getPlugin(), new DoorToggleTask(doors), closetime * 20L);
                             }
                         }
                     }

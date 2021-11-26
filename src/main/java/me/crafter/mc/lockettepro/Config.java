@@ -17,12 +17,10 @@ public class Config {
     private static FileConfiguration config;
     private static FileConfiguration lang;
     private static String langfilename = "lang.yml";
-    private static boolean uuid = false;
     private static Set<Material> lockables = new HashSet<>();
     private static Set<String> privatestrings = new HashSet<>();
     private static Set<String> additionalstrings = new HashSet<>();
     private static Set<String> everyonestrings = new HashSet<>();
-    private static Set<String> timerstrings = new HashSet<>();
     private static String defaultprivatestring = "[Private]";
     private static String defaultadditionalstring = "[More Users]";
     private static byte enablequickprotect = (byte) 1;
@@ -32,13 +30,9 @@ public class Config {
     private static int cachetime = 0;
     private static boolean cacheenabled = false;
     private static byte blockhopperminecart = 0;
-    private static boolean lockexpire = false;
-    private static double lockexpiredays = 60D;
-    public static boolean protocollib = false;
     public static boolean worldguard = false;
     public static boolean coreprotect = false;
     private static long lockdefaultcreatetime = -1L;
-    private static String lockexpirestring = "";
     private static Set<String> protectionexempt = new HashSet<>();
 
     public Config(Plugin _plugin) {
@@ -50,8 +44,6 @@ public class Config {
         initDefaultConfig();
         initAdditionalFiles();
         config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
-        uuid = config.getBoolean("enable-uuid-support", false);
-        protocollib = config.getBoolean("protocollib", true);
         worldguard = config.getBoolean("worldguard", true);
         coreprotect = config.getBoolean("coreprotect", true);
         langfilename = config.getString("language-file-name", "lang.yml");
@@ -59,7 +51,6 @@ public class Config {
         String enablequickprotectstring = config.getString("enable-quick-protect", "true");
 
         switch (enablequickprotectstring.toLowerCase()) {
-            case "true" -> enablequickprotect = 1;
             case "false" -> enablequickprotect = 0;
             case "sneak" -> enablequickprotect = 2;
             default -> enablequickprotect = 1;
@@ -79,13 +70,6 @@ public class Config {
         defaultprivatestring = privatestringlist.get(0);
         defaultadditionalstring = additionalstringlist.get(0);
 
-        List<String> timerstringlist = config.getStringList("timer-signs");
-        List<String> timerstringlist2 = new ArrayList<>();
-        for (String timerstring : timerstringlist) {
-            if (timerstring.contains("@")) timerstringlist2.add(timerstring);
-        }
-        timerstrings = new HashSet<>(timerstringlist2);
-
         cachetime = config.getInt("cache-time-seconds", 0) * 1000;
         cacheenabled = (config.getInt("cache-time-seconds", 0) > 0);
         if (cacheenabled) {
@@ -100,14 +84,10 @@ public class Config {
             default -> blockhopperminecart = 2;
         }
 
-        lockexpire = config.getBoolean("lock-expire", false);
-        lockexpiredays = config.getDouble("lock-expire-days", 999.9D);
         lockdefaultcreatetime = config.getLong("lock-default-create-time-unix", -1L);
         if (lockdefaultcreatetime < -1L) lockdefaultcreatetime = -1L;
-        lockexpirestring = ChatColor.translateAlternateColorCodes('&',
-                config.getString("lock-expire-string", "&3[Expired]"));
         List<String> unprocesseditems = config.getStringList("lockables");
-        lockables = new HashSet<Material>();
+        lockables = new HashSet<>();
         for (String unprocesseditem : unprocesseditems) {
             if (unprocesseditem.equals("*")) {
                 Collections.addAll(lockables, Material.values());
@@ -140,7 +120,6 @@ public class Config {
         config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
         config.addDefault("language-file-name", "lang.yml");
         config.addDefault("enable-quick-protect", true);
-        config.addDefault("enable-uuid-support", false);
         config.addDefault("block-interfere-placement", true);
         config.addDefault("block-item-transfer-in", false);
         config.addDefault("block-item-transfer-out", true);
@@ -153,17 +132,12 @@ public class Config {
         config.addDefault("additional-signs", additional_signs);
         String[] everyone_signs = {"[Everyone]", "[everyone]"};
         config.addDefault("everyone-signs", everyone_signs);
-        String[] timer_signs = {"[Timer:@]", "[timer:@]"};
-        config.addDefault("timer-signs", timer_signs);
         String[] lockables = {"CHEST","TRAPPED_CHEST","FURNACE","BURNING_FURNACE","HOPPER","BREWING_STAND","DIAMOND_BLOCK",
                 "OAK_DOOR","SPRUCE_DOOR","BIRCH_DOOR","JUNGLE_DOOR","ACACIA_DOOR","DARK_OAK_DOOR","IRON_DOOR", "LECTERN"};
         config.addDefault("lockables", lockables);
         String[] protection_exempt = {"nothing"};
         config.addDefault("protection-exempt", protection_exempt);
-        config.addDefault("lock-expire", false);
-        config.addDefault("lock-expire-days", 999.9D);
         config.addDefault("lock-default-create-time-unix", -1L);
-        config.addDefault("lock-expire-string", "&3[Expired]");
 
         config.options().copyDefaults(true);
         try {
@@ -203,16 +177,8 @@ public class Config {
         return blockhopperminecart;
     }
 
-    public static Double getLockExpireDays() {
-        return lockexpiredays;
-    }
-
     public static long getLockDefaultCreateTimeUnix() {
         return lockdefaultcreatetime;
-    }
-
-    public static String getLockExpireString() {
-        return lockexpirestring;
     }
 
     public static String getLang(String path) {
@@ -234,31 +200,6 @@ public class Config {
 
     public static boolean isEveryoneSignString(String message) {
         return everyonestrings.contains(message);
-    }
-
-    public static boolean isTimerSignString(String message) {
-        for (String timerstring : timerstrings) {
-            String[] splitted = timerstring.split("@", 2);
-            if (message.startsWith(splitted[0]) && message.endsWith(splitted[1])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static int getTimer(String message) {
-        for (String timerstring : timerstrings) {
-            String[] splitted = timerstring.split("@", 2);
-            if (message.startsWith(splitted[0]) && message.endsWith(splitted[1])) {
-                String newmessage = message.replace(splitted[0], "").replace(splitted[1], "");
-                try {
-                    int seconds = Integer.parseInt(newmessage);
-                    return Math.min(seconds, 20);
-                } catch (Exception ignored) {
-                }
-            }
-        }
-        return 0;
     }
 
     public static String getDefaultPrivateString() {
