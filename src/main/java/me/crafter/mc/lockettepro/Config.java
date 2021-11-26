@@ -203,10 +203,6 @@ public class Config {
         return blockhopperminecart;
     }
 
-    public static boolean isLockExpire() {
-        return lockexpire;
-    }
-
     public static Double getLockExpireDays() {
         return lockexpiredays;
     }
@@ -223,9 +219,6 @@ public class Config {
         return ChatColor.translateAlternateColorCodes('&', lang.getString(path, ""));
     }
 
-    public static boolean isUuidEnabled() {
-        return uuid;
-    }
 
     public static boolean isLockable(Material material) {
         return lockables.contains(material);

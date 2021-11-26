@@ -1,6 +1,5 @@
 package me.crafter.mc.lockettepro;
 
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -288,19 +287,10 @@ public class Utils {
 
     public static boolean isPlayerOnLine(Player player, String text) {
         if (Utils.isUsernameUuidLine(text)) {
-            if (Config.isUuidEnabled()) {
-                return player.getUniqueId().toString().equals(getUuidFromLine(text));
-            } else {
-                return player.getName().equals(getUsernameFromLine(text));
-            }
+            return player.getName().equals(getUsernameFromLine(text));
         } else {
             return text.equals(player.getName());
         }
-    }
-
-    public static String getSignLineFromUnknown(WrappedChatComponent rawline) {
-        String json = rawline.getJson();
-        return getSignLineFromUnknown(json);
     }
 
     public static String getSignLineFromUnknown(String json) {

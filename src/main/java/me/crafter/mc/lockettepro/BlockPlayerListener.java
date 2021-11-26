@@ -51,8 +51,6 @@ public class BlockPlayerListener implements Listener {
                 Block block = event.getClickedBlock();
                 if (block == null) return;
                 // Check permission with external plugin
-                if (Dependency.isProtectedFrom(block, player)) return; // blockwise
-                if (Dependency.isProtectedFrom(block.getRelative(event.getBlockFace()), player)) return; // signwise
                 // Check whether locking location is obstructed
                 Block signLoc = block.getRelative(blockface);
                 if (!signLoc.isEmpty()) return;
@@ -73,15 +71,6 @@ public class BlockPlayerListener implements Listener {
                         // Put sign on
                         Block newsign = Utils.putSignOn(block, blockface, Config.getDefaultPrivateString(), player.getName(), signType);
                         Utils.resetCache(block);
-                        // Cleanups - UUID
-                        if (Config.isUuidEnabled()) {
-                            Utils.updateLineByPlayer(newsign, 1, player);
-                        }
-                        // Cleanups - Expiracy
-                        if (Config.isLockExpire()) {
-                            // set created to now
-                            Utils.updateLineWithTime(newsign, player.hasPermission("lockettepro.noexpire")); // set created to -1 (no expire) or now
-                        }
                         Dependency.logPlacement(player, newsign);
                     } else if (!locked && LocketteProAPI.isOwnerUpDownLockedDoor(block, player)) {
                         // Not locked, (is locked door nearby), is owner of locked door nearby
@@ -132,11 +121,6 @@ public class BlockPlayerListener implements Listener {
         if (LocketteProAPI.isLockString(topline) || LocketteProAPI.isAdditionalString(topline)) {
             Block block = LocketteProAPI.getAttachedBlock(event.getBlock());
             if (LocketteProAPI.isLockable(block)) {
-                if (Dependency.isProtectedFrom(block, player)) { // External check here
-                    event.setLine(0, Config.getLang("sign-error"));
-                    Utils.sendMessages(player, Config.getLang("cannot-lock-manual"));
-                    return;
-                }
                 boolean locked = LocketteProAPI.isLocked(block);
                 if (!locked && !LocketteProAPI.isUpDownLockedDoor(block)) {
                     if (LocketteProAPI.isLockString(topline)) {

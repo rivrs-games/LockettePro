@@ -167,10 +167,6 @@ public class LocketteProAPI {
             Block relativeblock = block.getRelative(blockface);
             // Find [Private] sign?
             if (isLockSign(relativeblock) && getFacing(relativeblock) == blockface) {
-                // Found [Private] sign, is expire turned on and expired? (relativeblock is now sign)
-                if (Config.isLockExpire() && LocketteProAPI.isSignExpired(relativeblock)) {
-                    continue; // Private sign but expired... But impossible to have 2 [Private] signs anyway?
-                }
                 return true;
             }
         }
@@ -385,9 +381,6 @@ public class LocketteProAPI {
     public static boolean isOwnerOnSign(Block block, Player player) { // Requires isLockSign
         String[] lines = ((Sign) block.getState()).getLines();
         if (Utils.isPlayerOnLine(player, lines[1])) {
-            if (Config.isUuidEnabled()) {
-                Utils.updateLineByPlayer(block, 1, player);
-            }
             return true;
         }
         return false;
@@ -398,9 +391,6 @@ public class LocketteProAPI {
         // Normal
         for (int i = 1; i < 4; i++) {
             if (Utils.isPlayerOnLine(player, lines[i])) {
-                if (Config.isUuidEnabled()) {
-                    Utils.updateLineByPlayer(block, i, player);
-                }
                 return true;
             } else if (Config.isEveryoneSignString(lines[i])) {
                 return true;
