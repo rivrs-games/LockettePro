@@ -42,21 +42,9 @@ public class LockettePro extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockInventoryMoveListener(), this);
         // Dependency
         new Dependency(this);
-        // If UUID is not enabled, UUID listener won't register
-        if (Config.isUuidEnabled() || Config.isLockExpire()){
-            if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")){
-                DependencyProtocolLib.setUpProtocolLib(this);
-            } else {
-                plugin.getLogger().info("ProtocolLib is not found!");
-                plugin.getLogger().info("UUID & expiracy support requires ProtocolLib, or else signs will be ugly!");
-            }
-        }
     }
     
     public void onDisable(){
-        if (Config.isUuidEnabled() && Bukkit.getPluginManager().getPlugin("ProtocolLib") != null){
-            DependencyProtocolLib.cleanUpProtocolLib(this);
-        }
     }
     
     public static Plugin getPlugin(){
@@ -100,13 +88,7 @@ public class LockettePro extends JavaPlugin {
                 switch (args[0]){
                 case "reload":
                     if (sender.hasPermission("lockettepro.reload")){
-                        if(Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
-                            DependencyProtocolLib.cleanUpProtocolLib(this);
-                        }
                         Config.reload();
-                        if (Config.isUuidEnabled() && Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
-                            DependencyProtocolLib.setUpProtocolLib(this);
-                        }
                         Utils.sendMessages(sender, Config.getLang("config-reloaded"));
                     } else {
                         Utils.sendMessages(sender, Config.getLang("no-permission"));
@@ -129,7 +111,6 @@ public class LockettePro extends JavaPlugin {
                             sender.sendMessage("Bukkit: " + "v" + Bukkit.getServer().getClass().getPackage().getName().split("v")[1]);
                             sender.sendMessage("Server version: " + Bukkit.getVersion());
                             // Config
-                            sender.sendMessage("UUID: " + Config.isUuidEnabled());
                             sender.sendMessage("Expire: " + Config.isLockExpire() + " " + (Config.isLockExpire() ? Config.getLockExpireDays() : ""));
                             // ProtocolLib
                             sender.sendMessage("ProtocolLib info:");
@@ -204,9 +185,6 @@ public class LockettePro extends JavaPlugin {
                                 case "4":
                                     Utils.setSignLine(block, Integer.parseInt(args[0])-1, message);
                                     Utils.sendMessages(player, Config.getLang("sign-changed"));
-                                    if (Config.isUuidEnabled()){
-                                        Utils.updateUuidByUsername(Utils.getSelectedSign(player), Integer.parseInt(args[0])-1);
-                                    }
                                     break;
                                 }
                             } else if (LocketteProAPI.isAdditionalSign(block)){
@@ -221,9 +199,6 @@ public class LockettePro extends JavaPlugin {
                                 case "4":
                                     Utils.setSignLine(block, Integer.parseInt(args[0])-1, message);
                                     Utils.sendMessages(player, Config.getLang("sign-changed"));
-                                    if (Config.isUuidEnabled()){
-                                        Utils.updateUuidByUsername(Utils.getSelectedSign(player), Integer.parseInt(args[0])-1);
-                                    }
                                     break;
                                 }
                             } else {

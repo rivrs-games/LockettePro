@@ -21,10 +21,10 @@ repositories {
     jcenter()
     maven {name 'Spigot';     url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}
     maven {name 'Sonatype';   url 'https://oss.sonatype.org/content/groups/public'}
-    maven {name 'sk89q';      url 'http://maven.sk89q.com/artifactory/repo/'}
+    maven {name 'sk89q';      url 'http://maven.sk89q.com/artifactory/repo/'; allowInsecureProtocol(true)}
     maven {name 'playpro';    url 'https://maven.playpro.com/'}
     maven {name 'vault-repo'; url 'https://jitpack.io'}
-    maven {name 'dmulloy2';   url 'http://repo.dmulloy2.net/content/groups/public/'}
+    maven {name 'dmulloy2';   url 'http://repo.dmulloy2.net/content/groups/public/'; allowInsecureProtocol(true)}
 }
 
 dependencies {
@@ -32,8 +32,6 @@ dependencies {
     compileOnly('net.milkbowl.vault:VaultAPI:1.7') { transitive = false }
     compileOnly('com.sk89q.worldguard:worldguard-bukkit:7.0.2-SNAPSHOT') { transitive = false }
     // FIXME: ProtocolLib-API is not available for 4.5.0
-    //compileOnly('com.comphenix.protocol:ProtocolLib-API:4.4.0') { transitive = false }
-    compileOnly('com.comphenix.protocol:ProtocolLib:4.5.0') { transitive = false }
     // Note: the repo maven.playpro.com is not updated to match the version on spigotmc
     compileOnly('net.coreprotect:coreprotect:19.1') { transitive = false }
 }

@@ -69,10 +69,6 @@ public class BlockPlayerListener implements Listener {
                         // Put sign on
                         Block newsign = Utils.putSignOn(block, blockface, Config.getDefaultPrivateString(), player.getName(), player.getInventory().getItemInMainHand().getType());
                         Utils.resetCache(block);
-                        // Cleanups - UUID
-                        if (Config.isUuidEnabled()){
-                            Utils.updateLineByPlayer(newsign, 1, player);
-                        }
                         // Cleanups - Expiracy
                         if (Config.isLockExpire()) {
                             if (player.hasPermission("lockettepro.noexpire")) {
